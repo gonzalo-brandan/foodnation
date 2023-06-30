@@ -12,7 +12,7 @@ Foodnation is a platform designed for food enthusiasts who enjoy trying differen
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/your-username/foodnation.git`
+1. Clone the repository.
 2. Navigate to the project directory: `cd foodnation`
 3. Install the project dependencies: `pip install -r requirements.txt`
 4. Set up the database and apply migrations: `python manage.py migrate`
