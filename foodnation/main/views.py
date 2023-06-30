@@ -5,6 +5,12 @@ from django.contrib.auth import login, logout, authenticate
 from .models import Post
 
 
+def index(request):
+    return render(request, "main/index.html")
+
+def contact(request):
+    return render(request, "main/contact.html")
+
 @login_required(login_url="/login")
 def home(request):
     posts = Post.objects.all()
