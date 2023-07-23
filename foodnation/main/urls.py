@@ -10,6 +10,7 @@ urlpatterns = [
     path("home", views.home, name="home"),
     path("sign-up", views.sign_up, name="sign_up"),
     path("create-post", views.create_post, name="create_post"),
-    path("contact", views.contact, name="contact")
-
+    path("contact", views.contact, name="contact"),
+    path('chat-with-gpt/', views.chat_with_gpt, name='chat_with_gpt'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
