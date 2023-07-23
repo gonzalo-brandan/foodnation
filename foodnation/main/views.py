@@ -4,7 +4,32 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from .models import Post
 from item.models import Category, Item
+import openai
+from django.conf import settings
+from django.http import JsonResponse
 
+def chat_with_gpt(request):
+    if request.method == 'POST':
+        user_message = request.POST.get('message')
+        openai.api_key = settings.OPENAI_API_KEY
+
+        # Call the OpenAI API to get the model's response
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=user_message,
+            max_tokens=100
+        )
+
+        # Extract the generated message from the API response
+        chatbot_response = response.choices[0].text.strip()
+
+        # Return the chatbot response as JSON
+        return JsonResponse({'response': chatbot_response})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+def chatbot_view(request):
+    return render(request, "chatbot.html")
 
 def index(request):
     items = Item.objects.filter(is_sold=True) [0:6]
