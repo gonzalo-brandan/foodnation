@@ -142,6 +142,12 @@
           userInput.value = '';
         }
       }
+
+      function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
   
       sendButton.addEventListener('click', handleUserInput);
   
@@ -153,6 +159,36 @@
 
       function closeChatPopup() {
       chatPopup.style.display = 'none';
+    }
+
+    // Function to handle user input and send it to the backend
+    function handleUserInput() {
+      const userMessage = userInput.value.trim();
+      if (userMessage !== '') {
+        addMessage(userMessage, true);
+
+        // Send user message to the backend using AJAX
+        const formData = new FormData();
+        formData.append('message', userMessage);
+
+        fetch('/chat-with-gpt/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'), // Add CSRF token if using Django's CSRF protection
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const chatbotMessage = data.response;
+            addMessage(chatbotMessage, false);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+
+        userInput.value = '';
+      }
     }
 
     chatCloseButton.addEventListener('click', closeChatPopup);
