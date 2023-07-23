@@ -13,24 +13,34 @@ def chat_with_gpt(request):
         user_message = request.POST.get('message')
         openai.api_key = settings.OPENAI_API_KEY
 
-        # Call the OpenAI API to get the model's response
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=user_message,
-            max_tokens=100
+        # Get or initialize the conversation from the session
+        conversation = request.session.get('conversation', [])
+        
+        # Append user's input to the conversation
+        conversation.append({"role": "user", "content": user_message})
+
+        # Call the ChatGPT API
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=conversation
         )
 
-        # Extract the generated message from the API response
-        chatbot_response = response.choices[0].text.strip()
+        # Extract the assistant's response from the API response
+        system_message = response["choices"][0]["message"]["content"]
 
-        # Return the chatbot response as JSON
-        return JsonResponse({'response': chatbot_response})
+        # Append ChatGPT response (assistant role) back to conversation
+        conversation.append({"role": "assistant", "content": system_message})
+
+        # Store the updated conversation back to the session
+        request.session['conversation'] = conversation
+        return JsonResponse({'response': system_message})
+
     else:
         return JsonResponse({'error': 'Invalid request method'})
 
 def chatbot_view(request):
     return render(request, "chatbot.html")
-
+3
 def index(request):
     items = Item.objects.filter(is_sold=True) [0:6]
     categories = Category.objects.all()
